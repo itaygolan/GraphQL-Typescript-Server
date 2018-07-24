@@ -1,0 +1,6 @@
+# Types that are shared between multiple module's schemas
+
+type Error {
+    path: String!
+    message: String!
+}
