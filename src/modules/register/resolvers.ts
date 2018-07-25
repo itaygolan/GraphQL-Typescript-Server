@@ -9,6 +9,7 @@ import { GQL } from '../../types/schema';
 import { formatYupError } from '../../utils/formatYupError';
 import { duplicateEmail, emailNotLongEnough, invalidEmail, passwordNotLongEnough } from './errorMessages';
 import { createConfirmEmail } from '../../utils/createConfirmEmail';
+//import { sendEmail } from '../../utils/sendEmails';
 
 
 // make sure email and password are valid using yup module
@@ -68,7 +69,12 @@ export const resolvers: ResolverMap = {
             })
             await user.save(); // must save user to database -- returns a promise so must await 
 
-           await createConfirmEmail(url, user.id, redis);
+
+            await createConfirmEmail(url, user.id, redis)
+            // // Send email
+            // if (process.env.NODE_ENV !== 'test') {
+            //     await sendEmail("a3794629@nwytg.net", await createConfirmEmail(url, user.id, redis));
+            // }
             
            return null;
         }
