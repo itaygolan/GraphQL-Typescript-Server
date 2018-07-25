@@ -8,6 +8,7 @@ import { User } from '../../entity/User';
 import { GQL } from '../../types/schema';
 import { formatYupError } from '../../utils/formatYupError';
 import { duplicateEmail, emailNotLongEnough, invalidEmail, passwordNotLongEnough } from './errorMessages';
+import { createConfirmEmail } from '../../utils/createConfirmEmail';
 
 
 // make sure email and password are valid using yup module
@@ -30,7 +31,7 @@ export const resolvers: ResolverMap = {
         bye: () => "bye"
     },
     Mutation: {
-        register: async (_, args: GQL.IRegisterOnMutationArguments) => {
+        register: async (_, args: GQL.IRegisterOnMutationArguments, { redis, url }) => {
             // Logic to register user
 
             // Validate schema before getting email and password
@@ -66,7 +67,10 @@ export const resolvers: ResolverMap = {
                 password: hashedPassword,
             })
             await user.save(); // must save user to database -- returns a promise so must await 
-            return null;
+
+           await createConfirmEmail(url, user.id, redis);
+            
+           return null;
         }
     }
 }   

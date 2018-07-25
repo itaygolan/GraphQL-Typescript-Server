@@ -4,6 +4,7 @@
    "description": "Awesome project developed with TypeORM.",
    "devDependencies": {
       "@types/bcryptjs": "^2.4.1",
+      "@types/ioredis": "^3.2.13",
       "@types/jest": "^23.3.0",
       "@types/node": "^10.3.5",
       "@types/uuid": "^3.4.3",
@@ -26,6 +27,7 @@
       "graphql-request": "^1.6.0",
       "graphql-tools": "^3.0.5",
       "graphql-yoga": "^1.14.12",
+      "ioredis": "^3.2.2",
       "nodemon": "^1.18.3",
       "pg": "^7.4.3",
       "reflect-metadata": "^0.1.12",
@@ -39,6 +41,7 @@
       "gen-schema-types": "gql2ts src/schema.graphql -o src/types/schema.d.ts"
    },
    "jest": {
+      "globalSetup" : "./src/test-setup/callSetup.js",
       "transform": {
          "^.+\\.tsx?$": "ts-jest"
       },

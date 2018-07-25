@@ -4,8 +4,10 @@ import * as path from 'path';
 import * as fs from 'fs';
 import {mergeSchemas, makeExecutableSchema} from 'graphql-tools';
 import { GraphQLSchema } from 'graphql';
+import * as Redis from 'ioredis';
 
 import { createTypeormConn } from "./utils/createTypeormConn";
+import { User } from './entity/User';
 
 export const startServer = async () => {
   
@@ -24,9 +26,33 @@ export const startServer = async () => {
       makeExecutableSchema({ resolvers, typeDefs })
     );
   })
+
+  const redis = new Redis();
   
   // merge schemas all together and pass to GraphQlServer
-  const server = new GraphQLServer({ schema : mergeSchemas({ schemas }) });
+  const server = new GraphQLServer({ 
+    schema : mergeSchemas({ schemas }),
+    context: ({ request }) => ({ 
+      redis,
+      url: `${request.protocol}://${request.get("host")}`
+    })
+  });
+
+  // REST endpoint for email confirmation link
+  // Once user clicks on confirmation link
+  server.express.get("/confirm/:id", async (req, res) => {
+    // Get id key from url
+    const { id } = req.params;
+    const userId = await redis.get(id); // key value pair to get userId
+    if (userId) {
+      await User.update({ id: userId}, { confirmed: true } );
+      res.send("ok");
+    } else {
+      res.send("invalid");
+    }
+
+  })
+  
   await createTypeormConn();
   const app = await server.start({ 
     port: process.env.NODE_ENV === 'test' ? 0 : 4000 

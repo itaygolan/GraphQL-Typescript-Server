@@ -11,4 +11,7 @@ export class User extends BaseEntity{
 
     @Column("text") // doesnt matter - we will be storing hash
     password: string;
+
+    @Column("boolean", { default: false }) // check if user has confirmed their email
+    confirmed: boolean
 }
