@@ -23,7 +23,8 @@ export const resolvers: ResolverMap = {
     Mutation: {
         login: async (
             _, 
-            { email, password }: GQL.ILoginOnMutationArguments
+            { email, password }: GQL.ILoginOnMutationArguments,
+            { session } // from context
         ) => {       
            
            const user = await User.findOne({ where: { email } });   
@@ -47,6 +48,10 @@ export const resolvers: ResolverMap = {
            if (!valid) {
             return errorResponse;
            }
+
+           // login successful --> add a cookie
+           session.userId = user.id;
+
 
            // If both of these checks pass, user exists in database
            return null; // no error
