@@ -1,13 +1,13 @@
 import { GraphQLServer } from 'graphql-yoga';
 import * as session from 'express-session';
 import * as connectRedis from 'connect-redis';
+import "dotenv/config";
 
 import { createTypeormConn } from "./utils/createTypeormConn";
 import { redis } from './redis';
 import { confirmEmail } from './routes/confirmEmail';
 import { genSchema } from './utils/generateSchema';
 
-const SESSION_SECRET = "asdsadasdasd";
 const RedisStore = connectRedis(session);
 
 export const startServer = async () => {
@@ -28,7 +28,7 @@ export const startServer = async () => {
         client: redis as any
       }),
       name: "qid",
-      secret: SESSION_SECRET,
+      secret: process.env.SESSION_SECRET as string,
       resave: false,
       saveUninitialized: false,
       cookie: {
@@ -59,7 +59,9 @@ export const startServer = async () => {
   // send a cookie back
   const cors = {
     credentials: true,
-    origin: "http://localhost:3000" // front end server host
+    origin: process.env.NODE_ENV === "test" 
+      ? '*' 
+      : process.env.FRONTEND_HOST as string // front end server host
   }
 
   // REST endpoint for email confirmation link

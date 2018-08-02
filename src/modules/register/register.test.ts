@@ -1,6 +1,8 @@
 // .test is for jest so it knows this file is a test
 
 import { request } from 'graphql-request';
+import { Connection } from 'typeorm';
+
 import { User } from '../../entity/User';
 import { duplicateEmail, emailNotLongEnough, invalidEmail, passwordNotLongEnough } from './errorMessages';
 import { createTypeormConn } from '../../utils/createTypeormConn';
@@ -17,8 +19,14 @@ const mutation = (e: string, p: string) => `
     }
 `;
 
+let conn: Connection;
+
 beforeAll(async () => {
-    await createTypeormConn();
+    conn = await createTypeormConn();
+});
+
+afterAll(async () => {
+    conn.close();
 })
 
 describe("Register user", async () => {

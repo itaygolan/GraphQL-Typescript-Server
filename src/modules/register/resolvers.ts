@@ -1,6 +1,5 @@
 // Get types from type file generated from gen-schema-types
 
-import * as bcrypt from 'bcryptjs';
 import * as yup from 'yup';
 
 import { ResolverMap } from '../../types/graphql-utils';
@@ -61,11 +60,9 @@ export const resolvers: ResolverMap = {
                     }
                 ];
             }
-            // Hash password
-            const hashedPassword = await bcrypt.hash(password, 10);
             const user = User.create({
                 email,
-                password: hashedPassword,
+                password,
             })
             await user.save(); // must save user to database -- returns a promise so must await 
 
